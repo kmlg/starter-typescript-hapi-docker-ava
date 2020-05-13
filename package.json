@@ -1,0 +1,133 @@
+{
+  "name": "starter-typescript-hapi-docker-ava",
+  "version": "0.0.1",
+  "description": "A NodeJS starter application with typescript and ava",
+  "main": "build/main/index.js",
+  "typings": "build/main/index.d.ts",
+  "module": "build/module/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:kmlg/starter-typescript-hapi-docker-ava"
+  },
+  "keywords": [
+    "typescript",
+    "hapi",
+    "docker",
+    "ava"
+  ],
+  "author": "Kiril Mitev <kiril@kmitev.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kmlg/starter-typescript-hapi-docker-ava/issues"
+  },
+  "homepage": "https://github.com/kmlg/starter-typescript-hapi-docker-ava#readme",
+  "scripts": {
+    "describe": "npm-scripts-info",
+    "build": "run-s clean && run-p build:*",
+    "build:main": "tsc -p tsconfig.json",
+    "build:module": "tsc -p tsconfig.module.json",
+    "fix": "run-s fix:*",
+    "fix:prettier": "prettier \"src/**/*.ts\" --write",
+    "fix:tslint": "tslint --fix --project .",
+    "test": "run-s build test:*",
+    "test:lint": "tslint --project . && prettier \"src/**/*.ts\" --list-different",
+    "test:watch": "ava --watch",
+    "test:unit": "nyc ava --serial",
+    "docker:start": "docker-compose up",
+    "docker:start:test": "docker-compose -f docker-compose-test.yml up",
+    "watch": "run-s clean build:main && run-p \"build:main -- -w\" \"test:unit -- --watch\"",
+    "cov": "run-s build test:unit cov:html && open-cli coverage/index.html",
+    "cov:html": "nyc report --reporter=html",
+    "cov:send": "nyc report --reporter=lcov && codecov",
+    "cov:check": "nyc report && nyc check-coverage --lines 100 --functions 100 --branches 100",
+    "doc": "run-s doc:html && open-cli build/docs/index.html",
+    "doc:html": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --out build/docs",
+    "doc:json": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --json build/docs/typedoc.json",
+    "doc:publish": "gh-pages -m \"[ci skip] Updates\" -d build/docs",
+    "version": "standard-version",
+    "reset": "git clean -dfx && git reset --hard && npm i",
+    "clean": "trash build test",
+    "prepare-release": "run-s reset test cov:check doc:html version doc:publish",
+    "start": "nodemon build/main/index.js",
+    "start:ts": "nodemon src/index.ts",
+    "start:server": "ts-node src/server/index.ts"
+  },
+  "scripts-info": {
+    "info": "Display information about the package scripts",
+    "build": "Clean and rebuild the project",
+    "fix": "Try to automatically fix any linting problems",
+    "test": "Lint and unit test the project",
+    "watch": "Watch and rebuild the project on save, then rerun relevant tests",
+    "cov": "Rebuild, run tests, then create and open the coverage report",
+    "doc": "Generate HTML API documentation and open it in a browser",
+    "doc:json": "Generate API documentation in typedoc JSON format",
+    "version": "Bump package.json version, update CHANGELOG.md, tag release",
+    "reset": "Delete all untracked files and reset the repo to the last commit",
+    "prepare-release": "One-step: clean, build, test, publish docs, and prep a release"
+  },
+  "engines": {
+    "node": ">=8.9"
+  },
+  "dependencies": {
+    "@hapi/boom": "^9.1.0",
+    "@hapi/hapi": "^19.1.1",
+    "@hapi/inert": "^6.0.1",
+    "@hapi/joi": "^17.1.1",
+    "@hapi/vision": "^6.0.0",
+    "hapi-swagger": "^13.0.0",
+    "hapijs-status-monitor": "^1.0.1",
+    "nedb": "^1.8.0",
+    "sha.js": "^2.4.11",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^0.1.3",
+    "ava": "^3.8.1",
+    "codecov": "^3.5.0",
+    "cz-conventional-changelog": "^2.1.0",
+    "dotenv": "^8.2.0",
+    "gh-pages": "^2.0.1",
+    "nodemon": "^2.0.3",
+    "npm-run-all": "^4.1.5",
+    "npm-scripts-info": "*",
+    "nyc": "^14.1.1",
+    "open-cli": "^6.0.1",
+    "prettier": "^1.18.2",
+    "standard-version": "^6.0.1",
+    "trash-cli": "^3.0.0",
+    "ts-node": "^8.10.1",
+    "tslint": "^5.18.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-immutable": "^6.0.1",
+    "typedoc": "*",
+    "typescript": "^3.5.3"
+  },
+  "ava": {
+    "failFast": false,
+    "extensions": [
+			"ts"
+		],
+		"require": [
+			"ts-node/register"
+		]
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "prettier": {
+    "singleQuote": true,
+    "tabWidth": 4
+  },
+  "nyc": {
+    "extends": "@istanbuljs/nyc-config-typescript",
+    "exclude": [
+      "**/*.spec.js"
+    ],
+    "branches": 80,
+    "lines": 80,
+    "functions": 80,
+    "statements": 80
+  }
+}
